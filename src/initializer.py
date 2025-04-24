@@ -47,8 +47,7 @@ def add_middlewares(app):
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        root_path='/api',
-        docs_url='/api/docs'
+        root_path='/api'
     )
 
     app.include_router(MAIN_ROUTER)
