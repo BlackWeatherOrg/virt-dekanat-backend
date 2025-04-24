@@ -35,12 +35,6 @@ class User(Base):
         back_populates="users"
     )
 
-    def set_password(self, password: str) -> None:
-        self.password_hash = bcrypt.hash(password)
-
-    def check_password(self, password: str) -> bool:
-        return bcrypt.verify(password, self.password_hash)
-
 
 class Role(Base):
     __tablename__ = 'roles'

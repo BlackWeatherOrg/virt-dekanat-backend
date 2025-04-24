@@ -3,7 +3,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.router import MAIN_ROUTER
-from settings import settings
 from utils.exception_handlers import (incorrect_password_exception_handler,
                                       integrity_exception_handler,
                                       invalid_token_exception_handler,
@@ -37,8 +36,6 @@ def add_exceptions(app):
 
 
 def add_middlewares(app):
-    # временный корс
-    app.add_middleware(LoggerMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins='*',
@@ -46,23 +43,6 @@ def add_middlewares(app):
         allow_headers='*',
         allow_credentials=True,
     )
-
-
-def init_opentelemetry(app):
-    trace.set_tracer_provider(
-        TracerProvider(resource=Resource.create(
-            {SERVICE_NAME: 'opentelemetry.api.metrics'}))
-    )
-    tracer_provider = trace.get_tracer_provider()
-
-    jaeger_exporter = JaegerExporter(
-        agent_host_name=settings.OPENTELEMETRY_AGENT_HOST,
-        agent_port=settings.OPENTELEMETRY_AGENT_PORT
-    )
-
-    tracer_provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))
-
-    FastAPIInstrumentor.instrument_app(app)
 
 
 def create_app() -> FastAPI:
@@ -73,10 +53,5 @@ def create_app() -> FastAPI:
     app.include_router(MAIN_ROUTER)
     add_exceptions(app)
     add_middlewares(app)
-
-    INFO_LOGGER.info(f'API STARTED AT http://{settings.HOST}:{settings.PORT}')
-    INFO_LOGGER.info(f'API DOCS: http://{settings.HOST}:{settings.PORT}/docs')
-
-    init_opentelemetry(app)
 
     return app

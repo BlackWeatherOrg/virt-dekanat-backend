@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PermissionsEnum(Enum):
     VIEW_OWN_GRADES = 'view_own_grades'
     VIEW_COURSES = 'view_courses'

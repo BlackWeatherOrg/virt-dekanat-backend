@@ -11,5 +11,5 @@ services:
       POSTGRES_USER: '${POSTGRES_USER:-user}'
       POSTGRES_DB: '${POSTGRES_DB:-postgres}'
     volumes:
-      - temp:/var/lib/postgresql/data
+      - ./temp:/var/lib/postgresql/data
 

@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from reposotories.user import UserRepo
+from repositories.user import UserRepo
 from utils.auth import encode_access_token
 from utils.password_utils import verify_password
 
@@ -30,15 +30,10 @@ class AuthService:
 
 from fastapi import HTTPException, UploadFile
 
-from reposotories.user import UserRepo
-from schemas.blog import GetBlogSchema
+from repositories.user import UserRepo
 from schemas.user import (CreateUserSchema, DeleteUserSchema, GetUserSchema,
                           SearchUserSchema, UpdateUserSchema)
-from settings.log_config import ERROR_LOGGER
-from utils.enums import RolesEnum
 from utils.exceptions import IncorrectPasswordException
-from utils.object_storage import (delete_file_from_obj_storage,
-                                  upload_file_to_obj_storage)
 from utils.password_utils import get_password_hash, verify_password
 
 
@@ -116,5 +111,3 @@ class UserService:
             else:
                 raise IncorrectPasswordException
 
-    async def grant_role(self, user: GetUserSchema, role: RolesEnum):
-        await self._user_repo.update_by_id(user.id, {'role': role})
