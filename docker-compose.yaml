@@ -12,4 +12,14 @@ services:
       POSTGRES_DB: '${POSTGRES_DB:-postgres}'
     volumes:
       - ./temp:/var/lib/postgresql/data
-
+  backend:
+    build:
+      dockerfile: ./deploy/docker/Dockerfile
+      context: .
+    container_name: virt_dekanat_backend
+    ports:
+      - '${PORT:-7500}:7070'
+    volumes:
+      - ./temp:/backend/data
+    depends_on:
+      - postgres
