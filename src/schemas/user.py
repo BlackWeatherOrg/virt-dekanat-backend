@@ -23,6 +23,7 @@ class CreateUserSchema(BaseUserSchema):
 
 class GetUserSchema(BaseUserSchema):
     id: int
+    username: str
     email: str
     created_at: datetime.datetime
 

@@ -11,14 +11,14 @@ from schemas.user import LoginResponse
 from schemas.user import GetUserResponse
 from schemas.user import CreateUserSchema
 
-USER_ROUTER = APIRouter(
+AUTH_ROUTER = APIRouter(
     prefix='/auth',
     tags=['auth']
 )
 
 
 # register
-@USER_ROUTER.post('/register')
+@AUTH_ROUTER.post('/register')
 async def register_user(
         service: UserServiceDependency,
         request_data: CreateUserSchema
@@ -31,7 +31,7 @@ async def register_user(
     )
 
 
-@USER_ROUTER.post('/login')
+@AUTH_ROUTER.post('/login')
 async def login_router(
         request_data: LoginSchema,
         service: AuthServiceDependency

@@ -1,9 +1,14 @@
+import datetime
+
 import bcrypt
-from utils.enums.user import PermissionsEnum
+
+from schemas.user import GetUserSchema
+from utils.enums.user import PermissionsEnum, DatabasesEnum
 from sqlalchemy import (
-    Column, Integer, String, Table, ForeignKey
+    Column, Integer, String, Table, ForeignKey, func
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy import Enum as SqlEnum
 
 from models.base import Base
 
@@ -27,13 +32,23 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(120), unique=True, nullable=False)
-    password_hash = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     roles = relationship(
         "Role",
         secondary="user_roles",
         back_populates="users"
     )
+
+    def to_read_model(self) -> GetUserSchema:
+        return GetUserSchema(
+            id=self.id,
+            username=self.username,
+            email=self.email,
+            created_at=self.created_at
+        )
+
 
 
 class Role(Base):
@@ -55,11 +70,8 @@ class Role(Base):
 
 class Permission(Base):
     __tablename__ = 'permissions'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), unique=True, nullable=False)
+    __mapper_args__ = {'eager_defaults': True}
 
-    roles = relationship(
-        "Role",
-        secondary=role_permissions,
-        back_populates="permissions"
-    )
+    id = Column(Integer, primary_key=True, index=True)
+    database: Mapped[DatabasesEnum] = mapped_column(SqlEnum(DatabasesEnum))
+    permission_type: Mapped[PermissionsEnum] = mapped_column(SqlEnum(PermissionsEnum), default=PermissionsEnum.READ)
