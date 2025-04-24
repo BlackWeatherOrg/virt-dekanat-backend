@@ -18,7 +18,7 @@ services:
       context: .
     container_name: virt_dekanat_backend
     ports:
-      - '${PORT:-7500}:7070'
+      - '${PORT:-7400}:7070'
     volumes:
       - ./temp:/backend/data
     depends_on:
