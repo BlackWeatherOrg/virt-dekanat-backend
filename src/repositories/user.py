@@ -1,13 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
+from db.helpers import async_session_maker
 from models.user import User
 from repositories.base import SQLAlchemyRepository
 from utils.exceptions import ObjectDoesNotExistException
-
-
-def async_session_maker():
-    pass
 
 
 class UserRepo(SQLAlchemyRepository):
