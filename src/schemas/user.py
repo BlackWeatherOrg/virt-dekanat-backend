@@ -21,11 +21,24 @@ class CreateUserSchema(BaseUserSchema):
             return get_password_hash(v)
 
 
+class GetPermissionSchema(BaseModel):
+    id: int
+    database: str
+    permission: str
+
+
+class GetRoleSchema(BaseModel):
+    id: int
+    name: str
+    permissions: list[GetPermissionSchema]
+
+
 class GetUserSchema(BaseUserSchema):
     id: int
     username: str
     email: str
     created_at: datetime.datetime
+    role: GetRoleSchema
 
 
 class SearchUserSchema(BaseUserSchema):
@@ -66,3 +79,4 @@ class GetManyUsersResponse(DefaultUserResponse):
 
 class LoginResponse(DefaultResponse):
     access_token: str
+

@@ -2,7 +2,7 @@ import datetime
 
 import bcrypt
 
-from schemas.user import GetUserSchema
+from schemas.user import GetUserSchema, GetRoleSchema, GetPermissionSchema
 from utils.enums.user import PermissionsEnum, DatabasesEnum
 from sqlalchemy import (
     Column, Integer, String, Table, ForeignKey, func
@@ -12,12 +12,6 @@ from sqlalchemy import Enum as SqlEnum
 
 from models.base import Base
 
-
-user_roles = Table(
-    'user_roles', Base.metadata,
-    Column('user_id', Integer, ForeignKey('users.id'), primary_key=True),
-    Column('role_id', Integer, ForeignKey('roles.id'), primary_key=True)
-)
 
 role_permissions = Table(
     'role_permissions', Base.metadata,
@@ -35,10 +29,11 @@ class User(Base):
     password = Column(String(128), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
-    roles = relationship(
-        "Role",
-        secondary="user_roles",
-        back_populates="users"
+    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1, unique=False)
+
+    role: Mapped['Role'] = relationship(
+        back_populates="users",
+        lazy='selectin'
     )
 
     def to_read_model(self) -> GetUserSchema:
@@ -46,7 +41,8 @@ class User(Base):
             id=self.id,
             username=self.username,
             email=self.email,
-            created_at=self.created_at
+            created_at=self.created_at,
+            role=self.role.to_read_model()
         )
 
 
@@ -56,16 +52,21 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), unique=True, nullable=False)
 
-    users = relationship(
-        "User",
-        secondary=user_roles,
-        back_populates="roles"
+    users: Mapped[list['User']] = relationship(
+        back_populates="role",
+        lazy="selectin"
     )
-    permissions = relationship(
-        "Permission",
+    permissions: Mapped[list['Permission']] = relationship(
         secondary=role_permissions,
-        back_populates="roles"
+        lazy='selectin'
     )
+
+    def to_read_model(self) -> GetRoleSchema:
+        return GetRoleSchema(
+            id=self.id,
+            name=self.name,
+            permissions=[perm.to_read_model() for perm in self.permissions]
+        )
 
 
 class Permission(Base):
@@ -75,3 +76,10 @@ class Permission(Base):
     id = Column(Integer, primary_key=True, index=True)
     database: Mapped[DatabasesEnum] = mapped_column(SqlEnum(DatabasesEnum))
     permission_type: Mapped[PermissionsEnum] = mapped_column(SqlEnum(PermissionsEnum), default=PermissionsEnum.READ)
+
+    def to_read_model(self) -> GetPermissionSchema:
+        return GetPermissionSchema(
+            id=self.id,
+            database=self.database,
+            permission=self.permission_type
+        )
