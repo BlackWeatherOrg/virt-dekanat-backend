@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends
 
 from dependencies.user import AuthServiceDependency, VerifyTokenDependency
 from dependencies.user import UserServiceDependency
-from schemas.base import DefaultResponse
-from schemas.user import LoginSchema, SearchUserSchema, GetManyUsersResponse, UpdateUserSchema, ChangePasswordSchema, \
+from utils.base_schema import DefaultResponse
+from modules.Users.schemas import LoginSchema, SearchUserSchema, GetManyUsersResponse, UpdateUserSchema, ChangePasswordSchema, \
     DeleteUserSchema
-from schemas.user import LoginResponse
-from schemas.user import GetUserResponse
-from schemas.user import CreateUserSchema
+from modules.Users.schemas import LoginResponse
+from modules.Users.schemas import GetUserResponse
+from modules.Users.schemas import CreateUserSchema
 
 AUTH_ROUTER = APIRouter(
     prefix='/auth',

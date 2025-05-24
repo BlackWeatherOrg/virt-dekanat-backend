@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from schemas.base import DefaultResponse
+from utils.base_schema import DefaultResponse
 
 STATUS_ROUTER = APIRouter()
 
