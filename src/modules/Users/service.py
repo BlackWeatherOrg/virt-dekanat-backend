@@ -1,8 +1,4 @@
-from fastapi import HTTPException
-
-from repositories.user import UserRepo
 from utils.auth import encode_access_token
-from utils.password_utils import verify_password
 
 
 class AuthService:
@@ -28,11 +24,11 @@ class AuthService:
         raise HTTPException(status_code=403, detail='Invalid credentials')
 
 
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException
 
-from repositories.user import UserRepo
-from schemas.user import (CreateUserSchema, DeleteUserSchema, GetUserSchema,
-                          SearchUserSchema, UpdateUserSchema)
+from modules.Users.repository import UserRepo
+from modules.Users.schemas import (CreateUserSchema, DeleteUserSchema, GetUserSchema,
+                                   SearchUserSchema, UpdateUserSchema)
 from utils.exceptions import IncorrectPasswordException
 from utils.password_utils import get_password_hash, verify_password
 

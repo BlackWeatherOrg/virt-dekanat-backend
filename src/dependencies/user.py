@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from repositories.user import UserRepo
+from modules.Users.repository import UserRepo
 from fastapi.security import OAuth2PasswordBearer
 from utils.auth import verify_token
 from utils.exceptions import InvalidTokenException
-from services.user import UserService, AuthService
+from modules.Users.service import UserService, AuthService
 
 UserRepositoryDependency = Annotated[UserRepo, Depends(UserRepo)]
 

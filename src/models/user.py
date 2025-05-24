@@ -1,8 +1,6 @@
 import datetime
 
-import bcrypt
-
-from schemas.user import GetUserSchema, GetRoleSchema, GetPermissionSchema
+from modules.Users.schemas import GetUserSchema, GetRoleSchema, GetPermissionSchema
 from utils.enums.user import PermissionsEnum, DatabasesEnum
 from sqlalchemy import (
     Column, Integer, String, Table, ForeignKey, func

@@ -2,7 +2,7 @@ import datetime
 
 from pydantic import BaseModel, field_validator
 
-from schemas.base import DefaultResponse
+from utils.base_schema import DefaultResponse
 from utils.password_utils import get_password_hash
 
 

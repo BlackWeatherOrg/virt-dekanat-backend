@@ -3,7 +3,7 @@ from sqlalchemy.exc import NoResultFound
 
 from db.helpers import async_session_maker
 from models.user import User
-from repositories.base import SQLAlchemyRepository
+from utils.base_repository import SQLAlchemyRepository
 from utils.exceptions import ObjectDoesNotExistException
 
 
