@@ -11,7 +11,7 @@ class Disciplines(Base):
     }
 
     id = Column(Integer, primary_key=True, index=True)
-    discipline_name = Column(String(50), nullable=False)
+    discipline_name = Column(String(50), nullable=False, unique=True)
     description = Column(String(500), nullable=False)
     has_practice = Column(Boolean, default=True)
     has_labs = Column(Boolean, default=True)
