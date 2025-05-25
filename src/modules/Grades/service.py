@@ -10,20 +10,20 @@ class GradeService:
         self._repo = grade_repo
 
     async def create(self, data: CreateGradeSchema) -> GetGradeSchema:
-        score = await self._repo.create_one(data.model_dump(exclude_none=True))
-        return score
+        grade = await self._repo.create_one(data.model_dump(exclude_none=True))
+        return grade
 
     async def get_one(self, data: SearchGradeSchema) -> GetGradeSchema:
-        score = await self._repo.get_one(data.model_dump(exclude_none=True))
-        return score
+        grade = await self._repo.get_one(data.model_dump(exclude_none=True))
+        return grade
 
     async def get_many(self, data: SearchGradeSchema) -> list[GetGradeSchema]:
-        scores = await self._repo.get_many(data.model_dump(exclude_none=True))
-        return scores
+        grades = await self._repo.get_many(data.model_dump(exclude_none=True))
+        return grades
 
-    async def update_by_id(self, score_id: int, data: UpdateGradeSchema) -> GetGradeSchema:
-        score = await self._repo.update_by_id(score_id, data.model_dump(exclude_none=True))
-        return score
+    async def update_by_id(self, grade_id: int, data: UpdateGradeSchema) -> GetGradeSchema:
+        grade = await self._repo.update_by_id(grade_id, data.model_dump(exclude_none=True))
+        return grade
 
     async def delete_one(self, data: DeleteGradeSchema) -> None:
         await self._repo.delete_one(data.model_dump(exclude_none=True))
