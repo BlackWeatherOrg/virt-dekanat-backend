@@ -9,13 +9,11 @@ ENV PYTHONPATH="${PYTHONPATH}:/project/src"
 
 ENV TZ="Europe/Moscow"
 
-RUN pip install poetry
-
-COPY pyproject.toml alembic.ini ./
+COPY requirements.txt alembic.ini ./
 COPY src src
 
-RUN poetry install
+RUN pip install -r requirements.txt
 
 EXPOSE 7400
 
-CMD ["sh", "-c", "poetry run alembic upgrade head && poetry run python src/main.py"]
+CMD ["sh", "-c", "alembic upgrade head && python src/main.py"]

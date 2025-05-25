@@ -12,6 +12,7 @@ services:
       POSTGRES_DB: '${POSTGRES_DB:-postgres}'
     volumes:
       - ./temp:/var/lib/postgresql/data
+
   backend:
     build:
       dockerfile: ./deploy/docker/Dockerfile
