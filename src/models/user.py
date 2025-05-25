@@ -24,6 +24,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(120), unique=True, nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    middle_name = Column(String(50))
     password = Column(String(128), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
@@ -38,6 +41,9 @@ class User(Base):
         return GetUserSchema(
             id=self.id,
             username=self.username,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            middle_name=self.middle_name,
             email=self.email,
             created_at=self.created_at,
             role=self.role.to_read_model()

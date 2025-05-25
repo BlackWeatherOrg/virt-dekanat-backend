@@ -1,22 +1,27 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
+
+from dependencies.user import AuthServiceDependency, VerifyTokenDependency
 from modules.Professors.schemas import (
     CreateProfessorSchema, SearchProfessorSchema,
     UpdateProfessorSchema, DeleteProfessorSchema,
     GetProfessorResponse, GetManyProfessorsResponse, DefaultProfessorResponse
 )
-from dependencies.professor import professor_service_dependency
-from modules.Professors.service import ProfessorService
+from dependencies.professor import ProfessorServiceDependency
+from modules.Users.schemas import ChangePasswordSchema
+from utils.base_schema import DefaultResponse
 
 PROFESSOR_ROUTER = APIRouter(
-    prefix='/professors',
-    tags=['professors']
+    prefix='/professor',
+    tags=['professor']
 )
 
 
 @PROFESSOR_ROUTER.post('/create', response_model=GetProfessorResponse)
 async def create_professor(
         request_data: CreateProfessorSchema,
-        service: ProfessorService = Depends(professor_service_dependency)
+        service: ProfessorServiceDependency
 ) -> GetProfessorResponse:
     prof = await service.create(request_data)
     return GetProfessorResponse(
@@ -27,8 +32,8 @@ async def create_professor(
 
 @PROFESSOR_ROUTER.get('/getOne', response_model=GetProfessorResponse)
 async def get_professor(
-        request_data: SearchProfessorSchema = Depends(SearchProfessorSchema),
-        service: ProfessorService = Depends(professor_service_dependency)
+        request_data: Annotated[SearchProfessorSchema, Depends(SearchProfessorSchema)],
+        service: ProfessorServiceDependency
 ) -> GetProfessorResponse:
     prof = await service.get_one(request_data)
     return GetProfessorResponse(
@@ -39,8 +44,8 @@ async def get_professor(
 
 @PROFESSOR_ROUTER.get('/getMany', response_model=GetManyProfessorsResponse)
 async def list_professors(
-        request_data: SearchProfessorSchema = Depends(SearchProfessorSchema),
-        service: ProfessorService = Depends(professor_service_dependency)
+        request_data: Annotated[SearchProfessorSchema, Depends(SearchProfessorSchema)],
+        service: ProfessorServiceDependency
 ) -> GetManyProfessorsResponse:
     profs = await service.get_many(request_data)
     return GetManyProfessorsResponse(
@@ -49,24 +54,36 @@ async def list_professors(
     )
 
 
-@PROFESSOR_ROUTER.patch('/update', response_model=GetProfessorResponse)
-async def update_professor(
-        request_data: UpdateProfessorSchema,
-        service: ProfessorService = Depends(professor_service_dependency)
-) -> GetProfessorResponse:
-    updated = await service.update_by_id(request_data.id, request_data)
-    return GetProfessorResponse(
-        message='Professor updated',
-        data=updated
-    )
+# @PROFESSOR_ROUTER.patch('/update', response_model=GetProfessorResponse)
+# async def update_professor(
+#         request_data: UpdateProfessorSchema,
+#         service: ProfessorServiceDependency,
+#         professor_auth: VerifyTokenDependency
+# ) -> GetProfessorResponse | DefaultProfessorResponse:
+#     if 'pr' not in professor_auth:
+#         return DefaultProfessorResponse(
+#             message='You are not professor'
+#         )
+#
+#     updated = await service.update_by_id(request_data.id, request_data)
+#     return GetProfessorResponse(
+#         message='Professor updated',
+#         data=updated
+#     )
 
 
-@PROFESSOR_ROUTER.delete('/delete', response_model=DefaultProfessorResponse)
-async def delete_professor(
-        request_data: DeleteProfessorSchema,
-        service: ProfessorService = Depends(professor_service_dependency)
-) -> DefaultProfessorResponse:
-    await service.delete_one(request_data)
-    return DefaultProfessorResponse(
-        message='Professor deleted'
-    )
+# @PROFESSOR_ROUTER.delete('/delete', response_model=DefaultProfessorResponse)
+# async def delete_professor(
+#         request_data: Annotated[DeleteProfessorSchema, Depends(DeleteProfessorSchema)],
+#         service: ProfessorServiceDependency,
+#         professor_auth: VerifyTokenDependency
+# ) -> DefaultProfessorResponse:
+#     if 'pr' not in professor_auth:
+#         return DefaultProfessorResponse(
+#             message='You are not professor'
+#         )
+#
+#     await service.delete_one(request_data)
+#     return DefaultProfessorResponse(
+#         message='Professor deleted'
+#     )
