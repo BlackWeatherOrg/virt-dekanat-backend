@@ -7,20 +7,20 @@ class AuthService:
     def __init__(self):
         self.repository = UserRepo()
 
-    async def login(self, email: str, password: str) -> str:
+    async def login(self, username: str, password: str) -> str:
         """Функция авторизации, генерирует jwt токен
 
         Args:
-            email: почта для входа
+            username: код для входа
             password: пароль для входа
 
         Returns:
             str: jwt token
         """
 
-        if user_password := await self.repository.get_password(email):
+        if user_password := await self.repository.get_password(username):
             if verify_password(password, user_password):
-                return encode_access_token(email)
+                return encode_access_token(username)
         raise HTTPException(status_code=403, detail='Invalid credentials')
 
 

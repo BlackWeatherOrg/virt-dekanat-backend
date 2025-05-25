@@ -2,8 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from dependencies.user import AuthServiceDependency, VerifyTokenDependency
-from dependencies.user import UserServiceDependency
+from dependencies.user import UserServiceDependency, AuthServiceDependency, VerifyTokenDependency
 from utils.base_schema import DefaultResponse
 from modules.Users.schemas import LoginSchema, SearchUserSchema, GetManyUsersResponse, UpdateUserSchema, ChangePasswordSchema, \
     DeleteUserSchema

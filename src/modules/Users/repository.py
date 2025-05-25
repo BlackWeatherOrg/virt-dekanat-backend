@@ -10,9 +10,9 @@ from utils.exceptions import ObjectDoesNotExistException
 class UserRepo(SQLAlchemyRepository):
     model = User
 
-    async def get_password(self, email: str) -> str:
+    async def get_password(self, username: str) -> str:
         async with async_session_maker() as session:
-            stmt = select(self.model).filter_by(email=email)
+            stmt = select(self.model).filter_by(username=username)
             try:
                 res = await session.execute(stmt)
                 return res.scalar_one().password

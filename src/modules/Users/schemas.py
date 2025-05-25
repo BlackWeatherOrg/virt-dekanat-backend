@@ -13,6 +13,10 @@ class BaseUserSchema(BaseModel):
 class CreateUserSchema(BaseUserSchema):
     password: str
     email: str
+    first_name: str
+    last_name: str
+    middle_name: str | None = None
+
 
     @field_validator('password')
     @classmethod
@@ -36,6 +40,9 @@ class GetRoleSchema(BaseModel):
 class GetUserSchema(BaseUserSchema):
     id: int
     username: str
+    first_name: str
+    last_name: str
+    middle_name: str | None = None
     email: str
     created_at: datetime.datetime
     role: GetRoleSchema
@@ -44,6 +51,10 @@ class GetUserSchema(BaseUserSchema):
 class SearchUserSchema(BaseUserSchema):
     id: int | None = None
     username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    middle_name: str | None = None
+    role_id: int | None = None
     email: str | None = None
 
 
@@ -61,7 +72,7 @@ class ChangePasswordSchema(BaseModel):
 
 
 class LoginSchema(BaseModel):
-    email: str
+    username: str
     password: str
 
 
