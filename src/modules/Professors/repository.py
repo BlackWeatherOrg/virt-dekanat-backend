@@ -16,6 +16,7 @@ class ProfessorRepo(SQLAlchemyRepository):
                 professor = Professor(**data)
                 session.add(professor)
                 await session.commit()
+                await session.refresh(professor)
                 return professor.to_read_model()
             except IntegrityError as e:
                 raise IntegrityException from e

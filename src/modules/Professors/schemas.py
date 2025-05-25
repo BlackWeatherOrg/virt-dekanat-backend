@@ -1,6 +1,7 @@
 import datetime
 from pydantic import BaseModel, Field, EmailStr, field_validator
 
+from modules.Disciplines.schemas import GetDisciplineSchema
 from utils.base_schema import DefaultResponse
 from utils.password_utils import get_password_hash
 
@@ -28,6 +29,7 @@ class CreateProfessorSchema(BaseProfessorSchema):
 
 class GetProfessorSchema(BaseProfessorSchema):
     id: int
+    disciplines: list[GetDisciplineSchema]
     created_at: datetime.datetime
 
 

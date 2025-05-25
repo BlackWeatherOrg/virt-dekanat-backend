@@ -1,22 +1,22 @@
-from sqlalchemy import insert
 from sqlalchemy.exc import IntegrityError
 
 from db.helpers import async_session_maker
+from models.student import Student
 from utils.base_repository import SQLAlchemyRepository
-from models.grade import Grades
 from utils.exceptions import IntegrityException
 
 
-class GradeRepo(SQLAlchemyRepository):
-    model = Grades
+class StudentRepo(SQLAlchemyRepository):
+    model = Student
 
     async def create_one(self, data: dict):
         async with async_session_maker() as session:
             try:
-                grade = Grades(**data)
-                session.add(grade)
+                data['role_id'] = 1
+                student = Student(**data)
+                session.add(student)
                 await session.commit()
-                await session.refresh(grade)
-                return grade.to_read_model()
+                await session.refresh(student)
+                return student.to_read_model()
             except IntegrityError as e:
                 raise IntegrityException from e
