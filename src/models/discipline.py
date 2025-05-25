@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship, Mapped
 
 from models.base import Base
+from models.professor_discipline import professor_discipline
 from modules.Disciplines.schemas import GetDisciplineSchema
 
 
@@ -17,6 +19,12 @@ class Disciplines(Base):
     has_labs = Column(Boolean, default=True)
     authors = Column(String(100), nullable=False)
 
+    professors: Mapped[list['Professor']] = relationship(
+        secondary=professor_discipline,
+        back_populates='disciplines',
+        lazy='selectin'
+    )
+
     def to_read_model(self) -> "GetDisciplineSchema":
         return GetDisciplineSchema(
             id=self.id,
@@ -26,3 +34,5 @@ class Disciplines(Base):
             has_labs=self.has_labs,
             authors=self.authors
         )
+
+from .professor import Professor
