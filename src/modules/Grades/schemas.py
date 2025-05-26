@@ -27,7 +27,6 @@ class GetGradeSchema(BaseGradeSchema):
 
 class SearchGradeSchema(BaseModel):
     id: int | None = None
-    user_id: int | None = None
     value: int | None = None
     student_id: int | None = None
     professor_id: int | None = None

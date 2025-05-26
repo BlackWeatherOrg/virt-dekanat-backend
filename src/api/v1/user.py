@@ -123,9 +123,9 @@ async def delete(
 @USER_ROUTER.get('/current')
 async def current(
         service: UserServiceDependency,
-        email: VerifyTokenDependency
+        username: VerifyTokenDependency
 ) -> GetUserResponse:
-    user = await service.get_one(SearchUserSchema(email=email))
+    user = await service.get_one(SearchUserSchema(username=username))
 
     return GetUserResponse(
         message='Success',
