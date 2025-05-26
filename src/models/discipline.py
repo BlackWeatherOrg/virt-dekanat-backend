@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, JSON
 from sqlalchemy.orm import relationship, Mapped
 
 from models.base import Base
@@ -17,7 +17,7 @@ class Disciplines(Base):
     description = Column(String(500), nullable=False)
     has_practice = Column(Boolean, default=True)
     has_labs = Column(Boolean, default=True)
-    authors = Column(String(100), nullable=False)
+    authors = Column(JSON, default='[]')
 
     professors: Mapped[list['Professor']] = relationship(
         secondary=professor_discipline,
