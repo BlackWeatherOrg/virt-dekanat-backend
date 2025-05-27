@@ -9,8 +9,8 @@ class DopuskService:
     def __init__(self, dopusk_repo: DopuskRepo):
         self._repo = dopusk_repo
 
-    async def create(self, data: CreateDopuskSchema) -> GetDopuskSchema:
-        dopusk = await self._repo.create_one(data.model_dump(exclude_none=True))
+    async def create(self, data: dict) -> GetDopuskSchema:
+        dopusk = await self._repo.create_one(data)
         return dopusk
 
     async def get_one(self, data: SearchDopuskSchema) -> GetDopuskSchema:

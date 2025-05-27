@@ -29,13 +29,15 @@ async def create_dopusk(
     try:
         student = await stud_service.get_one(SearchStudentSchema(username=username))
 
-        request_data.student_id = student.id
-        dopusk = await service.create(request_data)
+        data = request_data.model_dump()
+        data['student_id'] = student.id
+        dopusk = await service.create(data)
         return GetDopuskResponse(
             message='Dopusk created',
             data=dopusk
         )
-    except Exception:
+    except Exception as e:
+        raise e
         return DefaultResponse(
             message='Something went wrong'
         )
