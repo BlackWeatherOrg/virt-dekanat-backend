@@ -9,7 +9,6 @@ from utils.enums.grades import GradeEnum
 
 
 class CreateDopuskSchema(BaseModel):
-    student_id: int
     professor_id: int
     date: datetime.date
     type: GradeEnum
