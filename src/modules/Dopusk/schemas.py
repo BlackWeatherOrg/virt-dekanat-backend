@@ -8,18 +8,15 @@ from utils.base_schema import DefaultResponse
 from utils.enums.grades import GradeEnum
 
 
-class BaseGradeSchema(BaseModel):
-    value: int = Field(..., ge=0, le=54)
-
-
-class CreateGradeSchema(BaseGradeSchema):
+class CreateDopuskSchema(BaseModel):
     student_id: int
     professor_id: int
+    date: datetime.date
     type: GradeEnum
     discipline_id: int
 
 
-class GetGradeSchema(BaseGradeSchema):
+class GetDopuskSchema(BaseModel):
     id: int
     type: GradeEnum
     student: GetStudentSchema
@@ -28,7 +25,7 @@ class GetGradeSchema(BaseGradeSchema):
     created_at: datetime.datetime
 
 
-class SearchGradeSchema(BaseModel):
+class SearchDopuskSchema(BaseModel):
     id: int | None = None
     value: int | None = None
     type: GradeEnum | None = None
@@ -37,22 +34,22 @@ class SearchGradeSchema(BaseModel):
     discipline_id: int | None = None
 
 
-class UpdateGradeSchema(BaseModel):
+class UpdateDopuskSchema(BaseModel):
     id: int
     value: int | None = Field(None, ge=0, le=54)
 
 
-class DeleteGradeSchema(BaseModel):
+class DeleteDopuskSchema(BaseModel):
     id: int
 
 
-class DefaultGradeResponse(DefaultResponse):
+class DefaultDopuskResponse(DefaultResponse):
     data: list | dict | None = None
 
 
-class GetGradeResponse(DefaultGradeResponse):
-    data: GetGradeSchema
+class GetDopuskResponse(DefaultDopuskResponse):
+    data: GetDopuskSchema
 
 
-class GetManyGradesResponse(DefaultGradeResponse):
-    data: list[GetGradeSchema]
+class GetManyDopusksResponse(DefaultDopuskResponse):
+    data: list[GetDopuskSchema]

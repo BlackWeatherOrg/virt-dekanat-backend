@@ -5,20 +5,20 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Enum as SqlEnum
 
 from models.base import Base
-from modules.Grades.schemas import GetGradeSchema
+from modules.Dopusk.schemas import GetDopuskSchema
 from utils.enums.grades import GradeEnum
 
 
-class Grades(Base):
-    __tablename__ = 'grades'
+class Dopusk(Base):
+    __tablename__ = 'dopuski'
     __mapper_args__ = {
-        'polymorphic_identity': 'grade',
+        'polymorphic_identity': 'dopusk',
         'eager_defaults': True
     }
 
     id = Column(Integer, primary_key=True, index=True)
-    value = Column(Integer, nullable=False)
     type: Mapped[GradeEnum] = mapped_column(SqlEnum(GradeEnum), default='MODULE1', server_default='MODULE1')
+    date: Mapped[datetime.date]
     created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
 
     student_id: Mapped[int] = mapped_column(ForeignKey('students.id', ondelete='CASCADE'))
@@ -36,11 +36,11 @@ class Grades(Base):
         lazy='joined'
     )
 
-    def to_read_model(self) -> "GetGradeSchema":
-        return GetGradeSchema(
+    def to_read_model(self) -> "GetDopuskSchema":
+        return GetDopuskSchema(
             id=self.id,
-            value=self.value,
             type=self.type,
+            date=self.date,
             student=self.student.to_read_model(),
             professor=self.professor.to_read_model(),
             discipline=self.discipline.to_read_model(),

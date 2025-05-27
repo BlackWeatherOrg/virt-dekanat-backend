@@ -8,7 +8,7 @@ class CreateDisciplineSchema(BaseModel):
     description: str
     has_practice: bool
     has_labs: bool
-    authors: str
+    authors: list
 
 
 class GetDisciplineSchema(BaseModel):
@@ -17,7 +17,7 @@ class GetDisciplineSchema(BaseModel):
     description: str
     has_practice: bool
     has_labs: bool
-    authors: str
+    authors: list
 
 class SearchDisciplineSchema(BaseModel):
     id: int | None = None
@@ -25,7 +25,6 @@ class SearchDisciplineSchema(BaseModel):
     description: str | None = None
     has_practice: bool | None = None
     has_labs: bool | None = None
-    authors: str | None = None
 
 
 class UpdateDisciplineSchema(BaseModel):
@@ -34,7 +33,7 @@ class UpdateDisciplineSchema(BaseModel):
     description: str | None = None
     has_practice: bool | None = None
     has_labs: bool | None = None
-    authors: str | None = None
+    authors: list | None = None
 
 
 class DeleteDisciplineSchema(BaseModel):
