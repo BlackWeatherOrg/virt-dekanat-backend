@@ -39,3 +39,26 @@ async def create_dopusk(
         return DefaultResponse(
             message='Something went wrong'
         )
+
+@DOPUSK_ROUTER.get('/getOne', response_model=GetDopuskResponse)
+async def get_dopusk(
+        request_data: Annotated[SearchDopuskSchema, Depends(SearchDopuskSchema)],
+        service: DopuskServiceDependency
+) -> GetDopuskResponse:
+    prof = await service.get_one(request_data)
+    return GetDopuskResponse(
+        message='Success',
+        data=prof
+    )
+
+
+@DOPUSK_ROUTER.get('/getMany', response_model=GetManyDopusksResponse)
+async def list_dopusks(
+        request_data: Annotated[SearchDopuskSchema, Depends(SearchDopuskSchema)],
+        service: DopuskServiceDependency
+) -> GetManyDopusksResponse:
+    profs = await service.get_many(request_data)
+    return GetManyDopusksResponse(
+        message='Success',
+        data=profs
+    )
