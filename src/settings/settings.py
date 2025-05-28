@@ -1,4 +1,5 @@
 import os
+import logging
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,6 +20,9 @@ class Settings(BaseSettings):
 
     APP_DIR: str = os.path.abspath(
         os.path.dirname(os.path.dirname(__file__) or '.'))
+
+    LOG_LEVEL: int = logging.INFO
+    LOG_DIR: str = f'{APP_DIR}/../fastapi-app/logs'
 
     model_config = SettingsConfigDict(
         env_file=f'{APP_DIR}/settings/settings.env')

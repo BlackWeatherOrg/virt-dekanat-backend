@@ -11,6 +11,10 @@ ENV TZ="Europe/Moscow"
 
 COPY requirements.txt alembic.ini ./
 COPY src src
+COPY prometheus prometheus
+COPY grafana grafana
+
+RUN mkdir -p fastapi-app/logs
 
 RUN pip install -r requirements.txt
 

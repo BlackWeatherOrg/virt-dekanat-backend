@@ -1,9 +1,16 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+
+from prometheus_client import make_asgi_app
+
+from settings import settings
+from settings.log_config import INFO_LOGGER
+from utils.middlewares.logger import LoggerMiddleware
 
 from api.router import MAIN_ROUTER
 from utils.exception_handlers import (incorrect_password_exception_handler,
@@ -47,6 +54,8 @@ def add_middlewares(app):
         allow_credentials=True,
     )
 
+    app.add_middleware(LoggerMiddleware)
+
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -66,5 +75,11 @@ def create_app() -> FastAPI:
     @app.get('/admin/login', response_class=HTMLResponse)
     def get_admin_login(request: Request):
         return templates.TemplateResponse("admin_login.html", {"request": request})
+
+    metrics_app = make_asgi_app()
+    app.mount("/metrics", metrics_app)
+
+    INFO_LOGGER.info(f'API STARTED AT http://{settings.HOST}:{settings.PORT}')
+    INFO_LOGGER.info(f'API DOCS: http://{settings.HOST}:{settings.PORT}/docs')
 
     return app

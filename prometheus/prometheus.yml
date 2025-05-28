@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "fastapi"
+    static_configs:
+      - targets: ["backend:7400"]  # Сбор метрик из FastAPI
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]    # Метрики самого Prometheus
+
+  - job_name: "loki"
+    static_configs:
+      - targets: ["loki:3100"]         # Loki для логов
