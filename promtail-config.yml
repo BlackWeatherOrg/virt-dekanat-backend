@@ -1,0 +1,39 @@
+server:
+  http_listen_port: 7440
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: backend
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: fastapi-logs
+          __path__: /var/log/fastapi/logs/*.json
+    pipeline_stages:
+      - json:
+          expressions:
+            ts: ts  # Извлекаем поле "ts" и сохраняем как метку "ts"
+            level: level # Извлекаем поле "level" и сохраняем как метку "level"
+            logger: logger # Извлекаем поле "logger" и сохраняем как метку "logger"
+            req_id: req_id # Извлекаем поле "req_id" и сохраняем как метку "req_id"
+            message: message # Извлекаем поле "message" и сохраняем как метку "message"
+      - json: # Парсим JSON внутри поля message
+          source: message # указываем, что парсить нужно поле message
+          expressions:
+            method: method # Извлекаем поле "method" и сохраняем как метку "method"
+            status: status # Извлекаем поле "status" и сохраняем как метку "status"
+            route: route # Извлекаем поле "route" и сохраняем как метку "route"
+            resp_size: resp_size # Извлекаем поле "resp_size" и сохраняем как метку "resp_size"
+            duration: duration # Извлекаем поле "duration" и сохраняем как метку "duration"
+            msg: msg # Извлекаем поле "msg" и сохраняем как метку "msg"
+            err: err
+            class_err: class_err
+      - template: # Форматируем строку лога
+          source: message # Указываем, что используем метку message как источник
+          template: '{ { .method } } { { .status } } { { .route } } { { .resp_size } } { { .resp_size } } { { .duration } } { { .err } }'
