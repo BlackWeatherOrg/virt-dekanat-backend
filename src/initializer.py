@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 from api.router import MAIN_ROUTER
 from utils.exception_handlers import (incorrect_password_exception_handler,
@@ -53,5 +56,15 @@ def create_app() -> FastAPI:
     app.include_router(MAIN_ROUTER)
     add_exceptions(app)
     add_middlewares(app)
+
+    templates = Jinja2Templates(directory="templates")
+
+    @app.get('/admin', response_class=HTMLResponse)
+    def get_admin_page(request: Request):
+        return templates.TemplateResponse("admin.html", {"request": request})
+
+    @app.get('/admin/login', response_class=HTMLResponse)
+    def get_admin_login(request: Request):
+        return templates.TemplateResponse("admin_login.html", {"request": request})
 
     return app

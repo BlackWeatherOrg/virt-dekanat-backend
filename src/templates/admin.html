@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Админка (SPA)</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .section { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; }
+    h2 { margin-top: 0; }
+    select, input { margin: 5px; }
+      .section input{
+        display:block
+      }
+  </style>
+</head>
+<body>
+  <h1>Административная панель</h1>
+  <button onclick="logout()"> Выйти </button>
+  <br>
+  <br>
+
+  <div id="login_section" class="section">
+    <h2>Вход</h2>
+    <input id="username" placeholder="Логин">
+    <input id="password" placeholder="Пароль" type="password">
+    <button onclick="login()">Войти</button>
+    <p id="login_status"></p>
+  </div>
+
+  <div id="admin_section" style="display:none;">
+    <div class="section">
+      <h2>Создание студента</h2>
+      <input id="st_username" placeholder="Логин">
+      <input id="st_email" placeholder="Почта">
+      <input id="st_fn" placeholder="Имя">
+      <input id="st_ln" placeholder="Фамилия">
+      <input id="st_mn" placeholder="Отчество">
+      <select id="group_select"></select>
+      <button onclick="createStudent()">Создать</button>
+      <p id="student_password"></p>
+    </div>
+
+    <div class="section">
+      <h2>Создание преподавателя</h2>
+      <input id="pr_username" placeholder="Логин">
+      <input id="pr_email" placeholder="Почта">
+      <input id="pr_phone" placeholder="Телефон">
+      <input id="pr_fn" placeholder="Имя">
+      <input id="pr_ln" placeholder="Фамилия">
+      <input id="pr_mn" placeholder="Отчество">
+      <button onclick="createProfessor()">Создать</button>
+      <p id="professor_password"></p>
+    </div>
+
+    <div class="section">
+      <h2>Создание дисциплины</h2>
+      <input id="dsc_name" placeholder="Название">
+      <input id="dsc_desc" placeholder="Описание">
+        <input type="checkbox" id="dsc_hl" value="Есть лабораторные"> <label> Есть лабораторные </label>
+      <input type="checkbox" id="dsc_pr" value="Есть практические занятия"> <label> Есть практические занятия </label>
+        <br>
+      <button onclick="createDsc()">Создать</button>
+    </div>
+
+    <!-- Можешь добавить другие блоки сюда — профессора, дисциплины, обновление и т.д. -->
+  </div>
+
+  <script>
+    const API = {
+      login: '/admin/login',
+      groups: '/v1/group/getMany',
+      students: '/v1/student/getMany',
+      createStudent: '/v1/student/create',
+      createDsc: '/v1/discipline/create',
+      createProfessor: '/v1/professor/create',
+      addStudentToGroup: '/v1/group/add_student',
+    };
+
+    function logout(){
+        localStorage.removeItem('token');
+        window.location.href = '/admin/login'
+    }
+
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const res = await fetch(API.login, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({ username, password })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.access_token);
+        document.getElementById('login_section').style.display = 'none';
+        document.getElementById('admin_section').style.display = 'block';
+        loadData();
+      } else {
+        document.getElementById('login_status').textContent = 'Неверный логин или пароль';
+      }
+    }
+
+    async function fetchWithAuth(url) {
+      const token = localStorage.getItem('token');
+      return fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(res => res.json());
+    }
+
+    async function loadData() {
+      const groups = await fetchWithAuth(API.groups);
+      const students = await fetchWithAuth(API.students);
+
+      const groupSelect = document.getElementById('group_select');
+      const groupSelect2 = document.getElementById('group_select_2');
+      [groupSelect, groupSelect2].forEach(select => {
+        select.innerHTML = '';
+        groups.data.forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = g.id;
+          select.appendChild(opt);
+        });
+      });
+
+      const studentSelect = document.getElementById('student_select');
+      studentSelect.innerHTML = '';
+      students.data.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `${s.first_name} ${s.last_name}`;
+        studentSelect.appendChild(opt);
+      });
+    }
+
+    async function createStudent() {
+      const st_username = document.getElementById('st_username').value;
+      const password = Math.random().toString(36).slice(-8);
+      const st_email = document.getElementById('st_email').value;
+      const st_fn = document.getElementById('st_fn').value;
+      const st_ln = document.getElementById('st_ln').value;
+      const st_mn = document.getElementById('st_mn').value;
+
+      const res = await fetch(API.createStudent, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: st_username.toLowerCase(),
+          password: password,
+          email: st_email,
+          first_name: st_fn,
+          last_name: st_ln,
+          middle_name: st_mn,
+          group_id: group_select.value
+        })
+      });
+
+      if (res.ok) {
+        document.getElementById('student_password').textContent = 'Сгенерированный пароль: ' + password;
+        loadData();
+      } else {
+        alert('Ошибка при создании студента');
+      }
+    }
+
+    async function createDsc() {
+    console.log("*:")
+      const dsc_name = document.getElementById('dsc_name').value;
+      const dsc_desc = document.getElementById('dsc_desc').value;
+      const dsc_hl = document.getElementById('dsc_hl').checked;
+      const dsc_pr = document.getElementById('dsc_pr').checked;
+
+      const res = await fetch(API.createDsc, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          discipline_name: dsc_name,
+          description: dsc_desc,
+          has_practice: dsc_hl,
+          has_labs: dsc_pr,
+          authors: []
+        })
+      });
+
+      if (res.ok) {
+        alert('Дисциплина добавлена');
+        loadData();
+      } else {
+        alert('Ошибка при создании дисциплины');
+      }
+    }
+
+    async function createProfessor() {
+      const pr_username = document.getElementById('pr_username').value;
+      const password = Math.random().toString(36).slice(-8);
+      const pr_email = document.getElementById('pr_email').value;
+      const pr_fn = document.getElementById('pr_fn').value;
+      const pr_phone = document.getElementById('pr_phone').value;
+      const pr_ln = document.getElementById('pr_ln').value;
+      const pr_mn = document.getElementById('pr_mn').value;
+
+      const res = await fetch(API.createProfessor, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: pr_username.toLowerCase(),
+          password: password,
+          email: pr_email,
+          phone_number: pr_phone,
+          first_name: pr_fn,
+          last_name: pr_ln,
+          middle_name: pr_mn,
+          teaching_experience: 1,
+          academic_degree: 'docent'
+        })
+      });
+
+      if (res.ok) {
+        document.getElementById('professor_password').textContent = 'Сгенерированный пароль: ' + password;
+        loadData();
+      } else {
+        alert('Ошибка при создании преподавателя');
+      }
+    }
+
+    async function addStudentToGroup() {
+      const studentId = document.getElementById('student_select').value;
+      const groupId = document.getElementById('group_select_2').value;
+
+      const res = await fetch(API.addStudentToGroup, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ student_id: parseInt(studentId), group_id: groupId })
+      });
+
+      if (res.ok) {
+        alert('Студент добавлен в группу');
+      } else {
+        alert('Ошибка при добавлении');
+      }
+    }
+
+    // Автоавторизация при наличии токена
+    if (localStorage.getItem('token')) {
+      document.getElementById('login_section').style.display = 'none';
+      document.getElementById('admin_section').style.display = 'block';
+      loadData();
+    }
+    else{
+        window.location.href = '/admin/login'
+    }
+  </script>
+</body>
+</html>

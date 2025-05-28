@@ -3,8 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from dependencies.discipline import DisciplineServiceDependency
+from dependencies.user import UserServiceDependency, VerifyTokenDependency
 from modules.Disciplines.schemas import GetDisciplineResponse, CreateDisciplineSchema, SearchDisciplineSchema, GetManyDisciplinesResponse, \
     UpdateDisciplineSchema, DefaultDisciplineResponse, DeleteDisciplineSchema
+from modules.Users.schemas import SearchUserSchema
+from utils.base_schema import DefaultResponse
 
 DISCIPLINE_ROUTER = APIRouter(
     prefix='/discipline',
@@ -14,8 +17,16 @@ DISCIPLINE_ROUTER = APIRouter(
 @DISCIPLINE_ROUTER.post('/create', response_model=GetDisciplineResponse)
 async def create_discipline(
         request_data: CreateDisciplineSchema,
-        service: DisciplineServiceDependency
-) -> GetDisciplineResponse:
+        service: DisciplineServiceDependency,
+        user_service: UserServiceDependency,
+        username: VerifyTokenDependency
+) -> GetDisciplineResponse | DefaultResponse:
+    user = await user_service.get_one(SearchUserSchema(username=username))
+    if user.role.id != 2:
+        return DefaultResponse(
+            message='Only admin can do this.'
+        )
+
     prof = await service.create(request_data)
     return GetDisciplineResponse(
         message='Discipline created',

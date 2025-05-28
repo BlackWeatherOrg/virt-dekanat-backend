@@ -16,18 +16,18 @@ AUTH_ROUTER = APIRouter(
 )
 
 
-# register
-@AUTH_ROUTER.post('/register')
-async def register_user(
-        service: UserServiceDependency,
-        request_data: CreateUserSchema
-) -> GetUserResponse:
-    user = await service.create(request_data)
-
-    return GetUserResponse(
-        message='Success',
-        data=user
-    )
+# # register
+# @AUTH_ROUTER.post('/register')
+# async def register_user(
+#         service: UserServiceDependency,
+#         request_data: CreateUserSchema
+# ) -> GetUserResponse:
+#     user = await service.create(request_data)
+#
+#     return GetUserResponse(
+#         message='Success',
+#         data=user
+#     )
 
 
 @AUTH_ROUTER.post('/login')

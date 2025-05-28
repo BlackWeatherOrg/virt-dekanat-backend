@@ -2,14 +2,14 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from dependencies.user import AuthServiceDependency, VerifyTokenDependency
+from dependencies.user import AuthServiceDependency, VerifyTokenDependency, UserServiceDependency
 from modules.Professors.schemas import (
     CreateProfessorSchema, SearchProfessorSchema,
     UpdateProfessorSchema, DeleteProfessorSchema,
     GetProfessorResponse, GetManyProfessorsResponse, DefaultProfessorResponse
 )
 from dependencies.professor import ProfessorServiceDependency
-from modules.Users.schemas import ChangePasswordSchema
+from modules.Users.schemas import ChangePasswordSchema, SearchUserSchema
 from utils.base_schema import DefaultResponse
 
 PROFESSOR_ROUTER = APIRouter(
@@ -18,11 +18,18 @@ PROFESSOR_ROUTER = APIRouter(
 )
 
 
-@PROFESSOR_ROUTER.post('/create', response_model=GetProfessorResponse)
+@PROFESSOR_ROUTER.post('/create')
 async def create_professor(
         request_data: CreateProfessorSchema,
-        service: ProfessorServiceDependency
-) -> GetProfessorResponse:
+        service: ProfessorServiceDependency,
+        user_service: UserServiceDependency,
+        username: VerifyTokenDependency
+) -> GetProfessorResponse | DefaultResponse:
+    user = await user_service.get_one(SearchUserSchema(username=username))
+    if user.role.id != 2:
+        return DefaultResponse(
+            message='Only admin can do this.'
+        )
     prof = await service.create(request_data)
     return GetProfessorResponse(
         message='Professor created',
